@@ -37,14 +37,32 @@ def generate_by_rule_based(prompt):
     else:
         return "hello world"
     
+def note_template(title, source, note):
+    status = "未發佈"
+    """
+    產生標準化的筆記模板內容
+    ---
+    title: 標題
+    source: 手動/rule-based/llm
+    status: 未發佈/已發佈
+    ---
+    note
+    """
+    template = f'''---\ntitle: {title}\nsource: {source}\nstatus: {status}\n---\n{note}
+    '''
+    return template
+    
 def start_note_generation(prompt=""):
-    # 這裡可以選擇使用 LLM 或規則基礎的方法來生成筆記
-    # 目前示例中直接使用 LLM 方法
     dotenv.load_dotenv()
     if "Gemini_API_KEY" in os.environ:
-        return generate_by_llm(prompt)
+        source = "llm"
+        note = generate_by_llm(prompt)
     else:
-        return generate_by_rule_based(prompt)
+        source = "rule-based"
+        note = generate_by_rule_based(prompt)
+    # 標題暫時固定為 "note"
+    final_note = note_template(title="note", source=source, note=note)
+    return final_note
 
 if __name__ == "__main__":
     prompt = input("請輸入關鍵字或Git log來生成筆記：")

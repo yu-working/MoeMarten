@@ -16,14 +16,9 @@ def main():
     logs = get_all_git_logs(base_path)
     today = datetime.now().strftime('%Y%m%d')
     note_filename = f"{today}.md"
-    all_notes = []
-    for project, log in logs.items():
-        if log:
-            note = start_note_generation(log)
-            section = f"## {project}\n{note}\n"
-            all_notes.append(section)
-    if all_notes:
-        write_note(note_filename, '\n'.join(all_notes))
+    if logs:
+        note = start_note_generation(logs.items())
+        write_note(note_filename, note)
         print(f"已寫入 {note_filename} 至 note/ 資料夾")
     else:
         print("沒有可用的 git log 或產生內容。")
