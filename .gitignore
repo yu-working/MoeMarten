@@ -1,0 +1,27 @@
+.env
+*.zip
+*.xlsx
+*csv
+.venv*
+__pycache__/
+*.pyc
+.DS_Store
+.vscode/
+.idea/
+node_modules/
+dist/
+build/
+*.pem
+
+# note
+notes/
+
+# Environments
+.env
+.envrc
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
