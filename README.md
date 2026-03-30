@@ -21,7 +21,7 @@
 
 1. 執行主程式：
    ```
-   python git_log_to_note.py
+   python note_generater.py
    ```
 2. 輸入你的專案根目錄路徑（例如 `C:\Users\User\repo_file`）。
 3. 程式會自動抓取所有子資料夾的 git log，並產生筆記，寫入 `notes/` 資料夾。
@@ -42,3 +42,4 @@
 - 自動產生標題並避免重複
 - 標記上次生成時間以避免內容重複
 - git log較多時，保留部分內容用於下次生成筆記
+- 添加 rule-based 正式生成規則(暫時直接貼上commit messege)

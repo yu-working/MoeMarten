@@ -16,15 +16,19 @@ def has_git_folder(folder_path):
     """
     return os.path.isdir(os.path.join(folder_path, '.git'))
 
-def get_git_log(folder_path, since_days=30):
+def get_git_log(folder_path, git_command):
     """
     取得指定資料夾本月的git log
+    input: 
+    - folder_path (str): 資料夾路徑
+    - git_command (str): git 指令
+    output: 
+    - git log內容 (str)
     """
-    since_date = datetime.now().strftime('%Y-%m-01')
     try:
         # git log --since="2026-03-01" --pretty=format:"%B" -p
         result = subprocess.run(
-            ["git", "log", f"--since={since_date}", "--pretty=format:%B", "-p"],
+            git_command.split(),
             cwd=folder_path,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -37,25 +41,35 @@ def get_git_log(folder_path, since_days=30):
         return f"[Error] {e.stderr.strip()}"
 
 
-def get_all_git_logs(base_path, since_days=30):
+def create_command_to_get_all_git_logs(base_path, since_date, mode='rule-based'):
     """
-    取得 base_path 下所有有 .git 的資料夾的 git log，回傳 dict: {資料夾名稱: log內容}
+    取得 base_path 下所有有 .git 的資料夾
+    並根據日期與模式(rule-based/llm)產生對應的 git log 指令
+    最後取得 git log，回傳 dict: {資料夾名稱: log內容}
     """
     if not os.path.isdir(base_path):
         raise ValueError("指定的路徑不存在或不是資料夾。")
+    if mode == 'rule-based':
+        git_command = f"git log --since={since_date} --pretty=format:%B"
+    elif mode == 'llm':
+        git_command = f"git log --since={since_date} --pretty=format:%B -p"
+    else:
+        raise ValueError("無效的模式，請選擇 'rule-based' 或 'llm'。")
+    
     result = {}
     projects = get_project_folders(base_path)
     for project in projects:
         project_path = os.path.join(base_path, project)
         if has_git_folder(project_path):
-            log = get_git_log(project_path, since_days)
+            log = get_git_log(project_path, git_command)
             result[project] = log if log else None
     return result
 
 def main():
     base_path = input("請輸入工作資料夾路徑: ").strip()
+    since_date = datetime.now().strftime('%Y-%m-01')
     try:
-        logs = get_all_git_logs(base_path)
+        logs = create_command_to_get_all_git_logs(base_path, since_date, mode='rule-based')
         for project, log in logs.items():
             print(f"\n=== {project} ===")
             print(log if log else "(無本月的git log)")
